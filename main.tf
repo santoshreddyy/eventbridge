@@ -38,24 +38,7 @@ resource "aws_cloudwatch_event_bus" "this" {
   tags = var.tags
 }
 
-resource "aws_cloudwatch_event_rule" "this" {
-  for_each = { for k, v in local.eventbridge_rules : v.name => v if var.create && var.create_rules }
 
-  name        = each.value.Name
-  name_prefix = lookup(each.value, "name_prefix", null)
-
-  event_bus_name = var.create_bus ? aws_cloudwatch_event_bus.this[0].name : var.bus_name
-
-  description         = lookup(each.value, "description", null)
-  is_enabled          = lookup(each.value, "enabled", true)
-  event_pattern       = lookup(each.value, "event_pattern", null)
-  schedule_expression = lookup(each.value, "schedule_expression", null)
-  role_arn            = lookup(each.value, "role_arn", false) ? aws_iam_role.eventbridge[0].arn : null
-
-  tags = merge(var.tags, {
-    Name = each.value.Name
-  })
-}
 
 resource "aws_cloudwatch_event_target" "this" {
   for_each = { for k, v in local.eventbridge_targets : v.name => v if var.create && var.create_targets }
