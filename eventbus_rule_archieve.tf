@@ -12,6 +12,15 @@ module "eventbridge" {
       event_pattern = jsonencode({ "source" : ["my.app.logs"] })
     }
   }
+   targets = {
+    orders = [
+      {
+        name = "log-orders-to-cloudwatch"
+        arn  = aws_cloudwatch_log_group.this.arn
+      }
+    ]
+  }
+
   create_archives = true
   archives = {
     "my-bus-launch-archive" = {
